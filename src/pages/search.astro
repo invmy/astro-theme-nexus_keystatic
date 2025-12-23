@@ -1,0 +1,23 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+import Search from "astro-pagefind/components/Search";
+---
+
+<Layout title="Search" description="Search">
+  <section class="max-w-2xl mx-auto" aria-label="Search Box">
+    <Search
+      id="search"
+      className="pagefind-ui"
+      uiOptions={{
+        showImages: true,
+        showSubResults: true,
+        showEmptyFilters: false,
+        sort: { date: "desc" },
+        sortFilters: ["Tag"],
+        openFilters: ["Section", "Tag"],
+        excerptLength: 20,
+      }}
+    />
+  </section>
+</Layout>

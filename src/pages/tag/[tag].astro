@@ -1,0 +1,94 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import List from "@/components/List.astro";
+import Card from "@/components/Card.astro";
+
+import {
+    getAllBlogs,
+    getAllMemos,
+    getAllBlogTags,
+    getAllMemoTags,
+} from "@/lib/data";
+
+export async function getStaticPaths() {
+    const blogTagsMap = await getAllBlogTags();
+    const memoTagsMap = await getAllMemoTags();
+
+    const allTags = new Set([...blogTagsMap.keys(), ...memoTagsMap.keys()]);
+
+    return Array.from(allTags).map((tag) => ({
+        params: { tag },
+    }));
+}
+
+const { tag } = Astro.params;
+
+const allBlogs = await getAllBlogs();
+const allMemos = await getAllMemos();
+
+// Filter articles
+const blogPosts = allBlogs
+    .filter((post) => post.data.tags?.includes(tag))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Filter notes
+const memoPosts = allMemos
+    .filter((post) => post.data.tags?.includes(tag))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const totalCount = blogPosts.length + memoPosts.length;
+---
+
+<Layout title={`${tag}`} description={`${tag}`} noindex={true}>
+    <div class="max-w-2xl mx-auto mt-10 flex flex-col">
+        <div class="flex flex-row items-center gap-2">
+            <Icon name="mdi:hashtag" class="w-12 h-12" />
+            <h1 class="text-5xl font-bold">{tag}</h1>
+            <span class="text-2xl font-medium text-secondary align-top ml-1">
+                {totalCount}
+            </span>
+        </div>
+
+        {
+            totalCount === 0 && (
+                <p class="text-center text-muted-foreground py-24 text-5xl">
+                    Notings found
+                </p>
+            )
+        }
+        {
+            memoPosts.length > 0 && (
+                <section class="flex flex-col my-20">
+                    <h2 class="text-3xl font-semibold my-4">
+                        MEMO
+                        <span class="text-base font-medium text-secondary align-top ml-1">
+                            {memoPosts.length}
+                        </span>
+                    </h2>
+
+                    {memoPosts.map((post) => (
+                        <List entry={post} />
+                    ))}
+                </section>
+            )
+        }
+        {
+            blogPosts.length > 0 && (
+                <section class="flex flex-col my-20 max-w-sm md:max-w-3xl lg:max-w-5xl mx-auto">
+                    <h2 class="text-3xl font-semibold my-8">
+                        BLOG
+                        <span class="text-base font-medium text-secondary align-top ml-1">
+                            {blogPosts.length}
+                        </span>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {blogPosts.map((post) => (
+                            <Card entry={post} />
+                        ))}
+                    </div>
+                </section>
+            )
+        }
+    </div>
+</Layout>

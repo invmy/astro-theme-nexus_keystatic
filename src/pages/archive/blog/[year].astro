@@ -1,0 +1,79 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Card from "@/components/Card.astro";
+
+export async function getStaticPaths() {
+  const blogs = await getCollection("blog");
+
+  const years = [
+    ...new Set(blogs.map((blog) => new Date(blog.data.date).getFullYear())),
+  ];
+
+  return years.map((year) => ({
+    params: { year: year.toString() },
+    props: { year },
+  }));
+}
+
+const { year } = Astro.props;
+const blogs = await getCollection("blog");
+
+const filteredBlogs = blogs
+  .filter((blog) => new Date(blog.data.date).getFullYear() === year)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const groups = filteredBlogs.reduce((acc: any, entry: any) => {
+  const month = new Date(entry.data.date).getMonth() + 1;
+  if (!acc[month]) acc[month] = [];
+  acc[month].push(entry);
+  return acc;
+}, {});
+
+const sortedMonths = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+---
+
+<Layout title={`Blog - ${year}`} description={`${year} All Blog`}>
+  <div class="max-w-2xl mx-auto">
+    <header class="mt-10">
+      <h1 class="text-5xl font-bold" transition:name={`nav-blog-${year}`}>
+        Blog {filteredBlogs.length}
+      </h1>
+      <div class="flex flex-row items-center gap-2 mt-24">
+        <h2 class="text-3xl font-bold">
+          {year}
+        </h2>
+        <span class="text-sm font-medium text-secondary align-top ml-1">
+          {filteredBlogs.length}
+        </span>
+      </div>
+    </header>
+
+    {
+      sortedMonths.map((month) => (
+        <section>
+          <h3 class="text-2xl font-semibold my-4">
+            {month}
+            <span class="text-sm font-medium text-secondary align-top ml-1">
+              {groups[month].length}
+            </span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-sm md:max-w-full lg:max-w-full mx-auto">
+            {groups[month].map((blog: any) => (
+              <Card entry={blog} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    <div class="mt-16 pt-8 border-t border-gray-100 dark:border-gray-800">
+      <a
+        href="/archive"
+        class="text-primary hover:underline flex items-center gap-2"
+      >
+        ← Go Back Archive
+      </a>
+    </div>
+  </div>
+</Layout>

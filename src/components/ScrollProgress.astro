@@ -1,0 +1,45 @@
+<div class="fixed inset-x-0 top-0 z-50 h-1 pointer-events-none">
+  <div
+    id="reading-progress"
+    class="h-full bg-(--a-text-color)"
+    style="width: 0%"
+  >
+  </div>
+</div>
+
+<script is:inline>
+  let progress;
+  let maxScroll = 0;
+
+  function calcMaxScroll() {
+    maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  }
+
+  function updateProgress() {
+    if (!progress || maxScroll <= 0) return;
+
+    const percent = Math.min(window.scrollY / maxScroll, 1);
+    progress.style.width = `${percent * 100}%`;
+  }
+
+  function initProgress() {
+    progress = document.getElementById("reading-progress");
+    if (!progress) return;
+
+    calcMaxScroll();
+    updateProgress();
+  }
+
+  // 全局事件监听器：只需添加一次（包括 scroll 和 resize）
+  window.addEventListener("scroll", updateProgress, { passive: true });
+  window.addEventListener("resize", calcMaxScroll);
+
+  // 可选：图像加载后重新计算高度（防止内容动态变化）
+  window.addEventListener("load", calcMaxScroll);
+
+  // 核心：每次页面加载（首次 + View Transitions 导航）都重新初始化
+  document.addEventListener("astro:page-load", initProgress);
+
+  // 首次加载也触发（保险起见，虽然 astro:page-load 在初始加载也会触发）
+  initProgress();
+</script>

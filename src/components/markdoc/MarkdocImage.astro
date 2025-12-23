@@ -1,0 +1,63 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  transitionName?: string;
+}
+
+const { src, alt, transitionName } = Astro.props;
+
+const modes = ["full", "min"];
+const parts = (alt || "").split("|").map((s) => s.trim());
+let mode = "";
+let description = "";
+
+if (alt && parts.length > 1 && modes.includes(parts[0].toLowerCase())) {
+  mode = parts[0].toLowerCase();
+  description = parts.slice(1).join("|");
+} else if (alt && modes.includes(alt.trim().toLowerCase())) {
+  mode = alt.trim().toLowerCase();
+  description = "";
+} else {
+  mode = "default";
+  description = alt || "";
+}
+
+let widthClass = "w-full";
+if (mode === "full") {
+  widthClass = "w-screen max-w-none relative left-1/2 -translate-x-1/2";
+} else if (mode === "min") {
+  widthClass = "w-full sm:max-w-[50%] mx-auto";
+}
+const allclass = `${widthClass} block h-auto rounded-[var(--custom-radius)] select-none zoomable-img`;
+---
+
+<figure class={`my-8 ${mode === "full" ? "" : "overflow-visible"}`}>
+  {
+    typeof src === "string" ? (
+      <img
+        src={src}
+        alt={description || "image"}
+        class={allclass}
+        transition:name={transitionName}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={description || "image"}
+        class={allclass}
+        transition:name={transitionName}
+      />
+    )
+  }
+  {
+    description && (
+      <figcaption class="mt-2 text-sm text-center opacity-75 not-prose font-bold">
+        {description}
+      </figcaption>
+    )
+  }
+</figure>

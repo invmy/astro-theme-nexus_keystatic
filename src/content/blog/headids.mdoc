@@ -1,0 +1,68 @@
+---
+title: Add quick links to your article titles
+date: 2025-12-20
+description: "Add quick links to your article titles"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/markdoc.png
+---
+
+[](/blog/image)
+
+## How is this achieved?
+
+The markdoc integration has been installed, and `/markdoc.config.mjs` has been created in the root directory.
+
+```
+//markdoc.config.mjs
+import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
+
+export default defineMarkdocConfig({
+      nodes: {
+            ...
+            heading: {
+                  ...nodes.heading,
+                  render: component('./src/components/markdoc/Heading.astro'),
+            },
+      },
+```
+
+## Heading.astro
+
+```astro
+---
+interface Props {
+    level: number;
+    id: string;
+}
+const { level, id } = Astro.props;
+const Tag = `h${level}` as const;
+---
+
+<Tag id={id} class="group relative">
+    <slot />
+    <a
+        href={`#${id}`}
+        class="absolute opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer active:opacity-20 not-prose"
+        aria-label="Copy heading Link"
+        onclick={`event.preventDefault();const url = decodeURIComponent(location.href.split('#')[0]) + '#${id}';navigator.clipboard.writeText(url);`}
+    >
+        #
+    </a>
+</Tag>
+
+
+```
+
+## Example
+
+# I am H1
+
+## I am H2
+
+### I am H3
+
+#### I am H4
+
+##### I am H5
+
+###### I am H6

@@ -1,0 +1,36 @@
+---
+import type { PaginateFunction } from "astro";
+import { getAllBlogs } from "@/lib/data";
+import Layout from "@/layouts/Layout.astro";
+import Card from "@/components/Card.astro";
+import Pagination from "@/components/Pagination.astro";
+import RSSicon from "@/components/RSSicon.astro";
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  const allBlogs = await getAllBlogs();
+
+  return paginate(allBlogs, { pageSize: 8 });
+}
+
+const { page } = Astro.props;
+---
+
+<Layout
+  title={`Page ${page.currentPage} Blog`}
+  description={`Latest Blog`}
+  noindex={true}
+>
+  <div class="max-w-sm md:max-w-3xl lg:max-w-5xl mx-auto">
+    <h1 class="max-w-2xl mx-auto text-5xl font-bold my-10 flex items-center">
+      Blog<RSSicon entry="blog/" />
+    </h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {page.data.map((p) => <Card entry={p} />)}
+    </div>
+  </div>
+  <Pagination page={page} />
+</Layout>

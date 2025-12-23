@@ -1,0 +1,94 @@
+---
+title: Setup Theme
+date: 2025-12-30
+description: "Setup Theme"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/markdoc.png
+---
+
+> Thank you for downloading this theme. I hope this article proves helpful to you.
+
+## astro.config.mjs
+
+Configure your website links and language here
+
+```ts
+// /astro.config.mjs
+
+```
+
+## site.ts
+
+Configure your website information and navigation bar here. and social Icons here.
+
+Get your icon from [Iconify](https://icon-sets.iconify.design/mdi/)
+
+```ts
+//src\site.ts
+
+export const siteConfig = {
+    author: 'Your Name',
+    title: 'My Astro Site',
+    description: 'Astro + Tailwind demo',
+    headerNav: [
+        { label: 'Memo', href: '/memo' },
+        { label: 'Blog', href: '/blog' },
+        { label: 'Archive', href: '/archive' },
+
+    ],
+    // https://icon-sets.iconify.design/mdi/
+    social: [
+        { label: 'GitHub', href: 'https://github.com/', icon: 'mdi:github' },
+        { label: 'Twitter', href: 'https://twitter.com/', icon: 'mdi:twitter' },
+        { label: 'Youtube', href: 'https://youtube.com/', icon: 'mdi:youtube' },
+        { label: 'Apple', href: 'https://apple.com/', icon: 'mdi:apple' },
+
+    ],
+    footerNav: [
+        { label: 'About', href: '/about' },
+        { label: 'Tags', href: '/tag' },
+        { label: 'Search', href: '/search' },
+    ],
+    topIcons: [
+        { label: 'Blog', icon: 'mdi:book', show: true },
+        { label: 'Memo', icon: 'mdi:draw-pen', show: true },
+        { label: 'Tags', icon: 'mdi:tag-multiple', show: true },
+    ]
+};
+```
+
+## global.css
+
+Set your color scheme here
+
+```css
+//src\global.css
+
+:root {
+    --a-text-color: #0066CC;
+    --bg-color: #F5F5F7;
+    --bg-tag-color: #EEEEEF;
+    --text-color: black;
+}
+
+
+:root.dark {
+    --a-text-color: #2997FF;
+    --bg-color: #1D1D1F;
+    --bg-tag-color: #EEEEEF;
+    --text-color: white;
+}
+
+```
+
+Set your font here
+
+```css
+@layer base {
+    body {
+        @apply font-mono subpixel-antialiased;
+    }
+}
+```
+
+[](https://tailwindcss.com/docs/font-family)

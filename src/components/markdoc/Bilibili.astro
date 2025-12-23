@@ -1,0 +1,25 @@
+---
+interface Props {
+    id: string;
+}
+const { id } = Astro.props;
+
+const url = new URL(id);
+
+const bvidMatch = id.match(/BV[a-zA-Z0-9]+/);
+const bvid = bvidMatch ? bvidMatch[0] : null;
+
+const aidMatch = id.match(/av(\d+)/i);
+const aid = aidMatch ? aidMatch[1] : null;
+
+const page = url.searchParams.get("p") || 1;
+---
+
+<iframe
+    style="width:100%;height:50vh;"
+    src={`//player.bilibili.com/player.html?${bvid ? `bvid=${bvid}` : `aid=${aid}`}&page=${page}&as_wide=1&high_quality=1&autoplay=false`}
+    scrolling="no"
+    frameborder="no"
+    allowfullscreen="true"
+>
+</iframe>

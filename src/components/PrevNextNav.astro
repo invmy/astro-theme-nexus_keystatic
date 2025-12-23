@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+interface Props {
+  prev: any;
+  next: any;
+}
+
+const { prev, next } = Astro.props as Props;
+---
+
+<nav
+  class="max-w-2xl mx-auto prev-next-nav flex justify-between items-center mt-36"
+>
+  <div class="w-4/9">
+    {
+      next ? (
+        <a href={`/${next.collection}/${next.id}`} class="group">
+          <div class="flex flex-row items-center line-clamp-3 border-l-4 pl-2 border-(--a-text-color)">
+            <p class="font-bold text-base text-pretty hover:text-(--a-text-color)">
+              {next.data.title}
+            </p>
+          </div>
+        </a>
+      ) : (
+        <span class="invisible">Not For Next</span>
+      )
+    }
+  </div>
+  <div class="w-1/9 text-center hover:text-(--a-text-color)">
+    <button
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+      aria-label="Back to top"
+    >
+      <Icon name="mdi:keyboard-arrow-up" class="w-8 h-8" />
+    </button>
+  </div>
+  <div class="w-4/9">
+    {
+      prev ? (
+        <a href={`/${prev.collection}/${prev.id}`} class="group">
+          <div class="flex flex-row justify-end items-center text-right line-clamp-3 border-r-4 pr-2 border-(--a-text-color)">
+            <p class="font-bold text-base text-pretty hover:text-(--a-text-color)">
+              {prev.data.title}
+            </p>
+          </div>
+        </a>
+      ) : (
+        <span class="invisible">Not For Prev</span>
+      )
+    }
+  </div>
+</nav>
+<!-- <div class="max-w-2xl mx-auto h-px bg-neutral-200 dark:bg-white my-8"></div> -->

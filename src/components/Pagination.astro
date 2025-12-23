@@ -1,0 +1,76 @@
+---
+import { Icon } from "astro-icon/components";
+interface Props {
+  page: any;
+}
+const { page } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const segments = pathname.split("/").filter(Boolean);
+
+const lastSegment = segments[segments.length - 1];
+const isNumeric = lastSegment && !isNaN(Number(lastSegment));
+const basePath = isNumeric
+  ? "/" + segments.slice(0, -1).join("/")
+  : pathname === "/"
+    ? ""
+    : pathname;
+const buttonClass =
+  "rounded-full bg-gray-100 transition dark:text-black hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-100 disabled:cursor-not-allowed disabled:opacity-50";
+---
+
+{
+  page.lastPage > 1 && (
+    <div class="flex justify-center py-16">
+      <div class="flex items-center gap-2">
+        <div>
+          <a href={page.url.prev}>
+            <button
+              class={buttonClass}
+              aria-label="Previous"
+              disabled={page.currentPage === 1}
+            >
+              <Icon name="mdi:keyboard-arrow-left" class="h-10 w-10" />
+            </button>
+          </a>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 text-black dark:text-white">
+            <input
+              type="text"
+              maxlength="3"
+              class="w-8 text-center font-medium bg-transparent outline-none
+                rounded focus:bg-white dark:focus:bg-gray-800 focus:shadow-sm focus:ring-1
+                focus:ring-gray-300 [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
+                [&::-webkit-inner-spin-button]:appearance-none"
+              placeholder={page.currentPage.toString()}
+              data-base-path={basePath}
+              onkeydown="
+      if (event.key === 'Enter') {
+        let val = parseInt(this.value) || 1;
+        let base = this.dataset.basePath || '';
+        window.location.href = val === 1 ? base || '/' : `${base}/${val}`;
+      }"
+            />
+
+            <span class="opacity-50 select-none">
+              <Icon name="mdi:slash-forward" class="h-5 w-5" />
+            </span>
+            <span class="font-medium select-none mx-2">{page.lastPage}</span>
+          </div>
+        </div>
+        <div>
+          <a href={page.url.next}>
+            <button
+              class={buttonClass}
+              aria-label="Next"
+              disabled={page.currentPage === page.lastPage}
+            >
+              <Icon name="mdi:keyboard-arrow-right" class="h-10 w-10" />
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}

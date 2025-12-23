@@ -1,0 +1,12 @@
+---
+import { Icon } from "astro-icon/components";
+interface Props {
+    entry: string;
+}
+
+const { entry } = Astro.props;
+---
+
+<a class="rss" href={`${entry}rss.xml`} target="_blank" aria-label="RSS Feed">
+    <Icon name="mdi:rss" class="w-12 h-12 text-orange-500" />
+</a>

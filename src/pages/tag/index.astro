@@ -1,0 +1,45 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getSortedBlogTags, getSortedMemoTags } from "@/lib/data";
+import Tag from "@/components/Tag.astro";
+
+const blogTags = await getSortedBlogTags();
+const memoTags = await getSortedMemoTags();
+---
+
+<Layout title="Tags" description="Tags" noindex={true}>
+    <div class="max-w-2xl mx-auto mt-10">
+        <h1 class="text-5xl font-bold my-10">Tags</h1>
+        <section class="mt-24">
+            <h1 class="text-3xl font-bold my-8">Blog</h1>
+            <div class="flex flex-wrap gap-3">
+                {
+                    blogTags.map((tag) => (
+                        <Tag entry={[tag.tag]} count={tag.count} />
+                    ))
+                }
+            </div>
+            {
+                blogTags.length === 0 && (
+                    <p class="text-muted-foreground">No blog tags found.</p>
+                )
+            }
+        </section>
+
+        <section class="mt-21">
+            <h1 class="text-3xl font-bold my-8">Memo</h1>
+            <div class="flex flex-wrap gap-3">
+                {
+                    memoTags.map((tag) => (
+                        <Tag entry={[tag.tag]} count={tag.count} />
+                    ))
+                }
+            </div>
+            {
+                memoTags.length === 0 && (
+                    <p class="text-muted-foreground">No memo tags found.</p>
+                )
+            }
+        </section>
+    </div>
+</Layout>

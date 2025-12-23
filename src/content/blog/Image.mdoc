@@ -1,0 +1,103 @@
+---
+title: Automatically handle your image embedding in MarkDoc
+date: 2025-12-20
+description: "markdoc image embedding in Astro"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/markdoc.png
+---
+
+> Nodes are elements that Markdoc inherits from Markdown, specifically the CommonMark specification. Markdoc nodes enable you to customize how your document renders without using any custom syntax—it consists entirely of Markdown. Customizing nodes lets you extend your implementation incrementally.
+
+[](https://markdoc.dev/docs/nodes)
+
+## How is this achieved?
+
+The markdoc integration has been installed, and `/markdoc.config.mjs` has been created in the root directory.
+
+```ts
+//markdoc.config.mjs
+import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
+
+export default defineMarkdocConfig({
+      nodes: {
+            ...
+            image: {
+                  ...nodes.image, 
+                  render: component('./src/components/markdoc/MarkdocImage.astro'),
+            },
+      },
+```
+
+Create `src\components\markdoc\MarkdocImage.astro`
+
+```astro
+//src\components\markdoc\MarkdocImage.astro
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+}
+
+const { src, alt } = Astro.props;
+
+const modes = ["full", "min"];
+const parts = alt.split("|").map((s) => s.trim());
+let mode = "";
+let description = "";
+
+if (parts.length > 1 && modes.includes(parts[0].toLowerCase())) {
+  mode = parts[0].toLowerCase();
+  description = parts.slice(1).join("|");
+} else if (modes.includes(alt.trim().toLowerCase())) {
+  mode = alt.trim().toLowerCase();
+  description = "";
+} else {
+  mode = "default";
+  description = alt;
+}
+
+let widthClass = "w-full";
+if (mode === "full") {
+  widthClass = "w-screen max-w-none relative left-1/2 -translate-x-1/2";
+} else if (mode === "min") {
+  widthClass = "w-full sm:max-w-[50%] mx-auto";
+}
+---
+
+<figure class={`my-8 ${mode === "full" ? "" : "overflow-visible"}`}>
+  {
+    typeof src === "string" ? (
+      <img
+        src={src}
+        alt={description || "image"}
+        class={`block h-auto rounded-3xl ${widthClass}`}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={description || "image"}
+        class={`block h-auto rounded-3xl ${widthClass}`}
+      />
+    )
+  }
+  {
+    description && (
+      <figcaption class="mt-2 text-sm text-center opacity-75 not-prose font-bold">
+        {description}
+      </figcaption>
+    )
+  }
+</figure>
+
+```
+
+## Example
+
+![min | This is a min-width image](../../assets/images/markdoc.png)
+
+![This is a default-width image](../../assets/images/markdoc.png)
+
+![full | This is a full-width image](../../assets/images/markdoc.png)

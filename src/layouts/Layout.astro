@@ -1,0 +1,60 @@
+---
+import "../styles/global.css";
+import { i18n } from "astro:config/server";
+import Nav from "@/components/Nav.astro";
+import ThemeIcon from "@/components/ThemeIcon.astro";
+import ScrollProgress from "@/components/ScrollProgress.astro";
+import Head from "@/components/Head.astro";
+
+import PageHead from "@/components/PageHead.astro";
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex } = Astro.props;
+---
+
+<html lang={i18n?.defaultLocale} class="no-scrollbar">
+  <Head>
+    {
+      Astro.slots.has("head") ? (
+        <slot name="head" />
+      ) : (
+        <PageHead title={title} description={description} noindex={noindex} />
+      )
+    }
+  </Head>
+  <body
+    class="min-h-screen flex flex-col p-5 overflow-x-hidden bg-[var(--bg-color)] text-black dark:text-white"
+  >
+    <ScrollProgress />
+    <header class="max-w-2xl w-full mx-auto mt-4 mb-9">
+      <nav class="flex flex-col sm:flex-row sm:items-center justify-between">
+        <Nav entry="title" />
+        <div class="flex gap-3">
+          <Nav entry="header" />
+          <ThemeIcon />
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1 w-full mx-auto" transition:animate="initial">
+      <slot />
+    </main>
+
+    <footer class="mt-auto">
+      <div
+        class="max-w-2xl mx-auto my-8 flex items-center justify-between flex-col sm:flex-row"
+      >
+        <div class="flex gap-1">
+          <Nav entry="social" />
+        </div>
+        <div class="flex gap-2">
+          <Nav entry="footer" />
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

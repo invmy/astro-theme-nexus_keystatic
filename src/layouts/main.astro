@@ -1,0 +1,76 @@
+---
+import { formatDate } from "@/lib/utils.ts";
+import Layout from "@/layouts/Layout.astro";
+import Images from "@/components/markdoc/MarkdocImage.astro";
+import PostHead from "@/components/PostHead.astro";
+import type { CollectionEntry } from "astro:content";
+import PrevNextNav from "@/components/PrevNextNav.astro";
+import Zoom from "@/components/Zoom.astro";
+
+interface Props {
+  entry: CollectionEntry<"blog"> | CollectionEntry<"memo">;
+  prev?: CollectionEntry<"blog"> | CollectionEntry<"memo">;
+  next?: CollectionEntry<"blog"> | CollectionEntry<"memo">;
+}
+
+const { entry, prev, next } = Astro.props;
+---
+
+<Layout>
+  <PostHead slot="head" post={entry} />
+  <section
+    class="max-w-2xl mx-auto overflow-visible scroll-touch"
+    data-pagefind-body
+  >
+    <Zoom />
+    {
+      entry.data.image && (
+        <Images
+          src={entry.data.image}
+          alt={`min | `}
+          transitionName={`${entry.collection}-${entry.id}-image`}
+        />
+      )
+    }
+    {
+      entry.data.tags &&
+        entry.data.tags.map((tag: string) => (
+          <a class="text-xs opacity-75 font-bold mr-1" href={`/tag/${tag}`}>
+            {tag}
+          </a>
+        ))
+    }
+    <h1
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-pretty my-4 border-l-6 pl-3"
+      transition:name={`${entry.collection}-${entry.id}-title`}
+    >
+      {entry.data.title}
+    </h1>
+    {
+      entry.data.date && (
+        <p class="text-sm opacity-50 font-bold">
+          {formatDate(entry.data.date)}
+        </p>
+      )
+    }
+    {
+      entry.data.description && (
+        <p class="text-2xl opacity-50 font-bold my-8">
+          {entry.data.description}
+        </p>
+      )
+    }
+
+    <article
+      class="prose prose-zinc dark:prose-invert mt-8 prose-lg lg:prose-xl max-w-none leading-relaxed tracking-wide"
+    >
+      <slot />
+    </article>
+  </section>
+  <PrevNextNav prev={prev} next={next} />
+  <div style="display:none">
+    <div data-pagefind-filter={`section:${entry.collection}`}></div>
+    <div data-pagefind-meta={`date:${formatDate(entry.data.date)}`}></div>
+    {entry.data.tags?.map((tag) => <div data-pagefind-filter={`tag:${tag}`} />)}
+  </div>
+</Layout>

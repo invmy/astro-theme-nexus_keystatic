@@ -1,0 +1,22 @@
+---
+import { formatDate } from "@/lib/utils";
+
+const { entry } = Astro.props;
+const formattedDate = formatDate(entry.data.date);
+---
+
+<div
+  class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 py-4 sm:py-1 text-lg font-semibold"
+>
+  <div class="shrink-0 opacity-50">
+    {formattedDate}
+  </div>
+  <div class="flex-1">
+    <a
+      href={`/${entry.collection}/${entry.id}`}
+      class="hover:text-(--a-text-color) dark:hover:text-(--a-text-color)"
+      transition:name={`${entry.collection}-${entry.id}-title`}
+      >{entry.data.title}</a
+    >
+  </div>
+</div>

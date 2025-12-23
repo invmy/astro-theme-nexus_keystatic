@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden;
+}
+
+/* font-mono font-serif font-sans */
+@layer base {
+  body {
+    @apply subpixel-antialiased;
+  }
+}
+
+@theme {
+  --custom-radius: 1.5rem;
+}
+
+:root {
+  --a-text-color: #0066cc;
+  --bg-color: #f5f5f7;
+  --bg-tag-color: #eeeeef;
+  --text-color: black;
+}
+
+:root.dark {
+  --a-text-color: #2997ff;
+  --bg-color: #1d1d1f;
+  --bg-tag-color: #eeeeef;
+  --text-color: white;
+}
+
+.link-preview {
+  --link-preview-corners: 0.5em;
+  --link-preview-padding-inline: 0.75rem;
+  background-color: var(--bg-tag-color);
+  color: black;
+  font-family: sans-serif;
+}
+
+.link-preview a {
+  color: var(--a-text-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.pagefind-ui {
+  --pagefind-ui-text: var(--text-color);
+  --pagefind-ui-background: var(--bg-color);
+  --pagefind-ui-primary: var(--a-text-color);
+  --pagefind-ui-tag: var(--bg-color);
+}
+
+::view-transition-old([name*="-image"]),
+::view-transition-new([name*="-image"]) {
+  border-radius: var(--custom-radius);
+  overflow: clip;
+}

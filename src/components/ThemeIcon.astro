@@ -1,0 +1,61 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button
+  id="theme-toggle"
+  aria-label="Toggle theme"
+  class="relative h-8 w-8 overflow-hidden hover:text-(--a-text-color)"
+>
+  <!-- Sun -->
+  <span
+    class="absolute inset-0 flex items-center justify-center
+           transition-all duration-300 ease-in-out
+           dark:rotate-90 dark:scale-0"
+  >
+    <Icon name="mdi:white-balance-sunny" class="h-6 w-6" />
+  </span>
+
+  <!-- Moon -->
+  <span
+    class="absolute inset-0 flex items-center justify-center
+           rotate--90 scale-0
+           transition-all duration-300 ease-in-out
+           dark:rotate-0 dark:scale-100"
+  >
+    <Icon name="mdi:moon-and-stars" class="h-6 w-6" />
+  </span>
+</button>
+
+<script is:inline>
+  const toggle = document.getElementById("theme-toggle");
+  const root = document.documentElement;
+
+  const applyTheme = () => {
+    if (
+      localStorage.theme === "dark" ||
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  };
+
+  applyTheme();
+
+  document.addEventListener("astro:after-swap", () => {
+    applyTheme();
+
+    const newToggle = document.getElementById("theme-toggle");
+    newToggle?.addEventListener("click", toggleTheme);
+  });
+
+  const toggleTheme = () => {
+    root.classList.toggle("dark");
+    localStorage.theme = root.classList.contains("dark") ? "dark" : "light";
+  };
+
+  toggle?.addEventListener("click", toggleTheme);
+</script>

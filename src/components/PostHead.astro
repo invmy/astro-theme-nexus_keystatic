@@ -1,0 +1,49 @@
+---
+import { siteConfig } from "@/site";
+import { i18n } from "astro:config/server";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"blog"> | CollectionEntry<"memo">;
+}
+
+const { post } = Astro.props;
+
+const title = post.data.title || siteConfig.title;
+const description = post.data.description || siteConfig.description;
+const ogImageURL = new URL(
+  `/open-graph/${post.collection}/${post.id}.png`,
+  Astro.site
+);
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<title>{`${title} | ${siteConfig.title}`}</title>
+<meta name="title" content={`${title} | ${siteConfig.title}`} />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageURL} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={i18n?.defaultLocale} />
+<meta property="og:site_name" content={siteConfig.title} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:author" content={siteConfig.author} />
+
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta property="twitter:image" content={ogImageURL} />
+<meta name="twitter:image:alt" content={title} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content={siteConfig.author} />
+
+{
+  post?.data.tags &&
+    post.data.tags.map((tag: string) => {
+      return <meta property="article:tag" content={tag} />;
+    })
+}

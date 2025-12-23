@@ -1,0 +1,46 @@
+---
+import { siteConfig } from "@/site";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  entry: any;
+}
+
+const { entry } = Astro.props;
+
+const Navclass =
+  "text-(--a-text-color) text-xl font-medium hover:underline underline-offset-3";
+---
+
+{
+  entry === "title" ? (
+    <a href="/" class=" text-3xl font-bold">
+      {siteConfig.title}
+    </a>
+  ) : entry === "header" ? (
+    siteConfig.headerNav.map((item) => {
+
+      return (
+        <a
+          href={item.href}
+          aria-label={item.label}
+          class={Navclass}
+        >
+          {item.label}
+        </a>
+      );
+    })
+  ) : entry === "footer" ? (
+    siteConfig.footerNav.map((item) => (
+      <a href={item.href} aria-label={item.label} class={Navclass}>
+        {item.label}
+      </a>
+    ))
+  ) : entry === "social" ? (
+    siteConfig.social.map((item) => (
+      <a href={item.href} aria-label={item.label} target="_blank">
+        <Icon name={item.icon} class="w-8 h-8 hover:text-(--a-text-color)" />
+      </a>
+    ))
+  ) : null
+}

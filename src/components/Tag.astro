@@ -1,0 +1,20 @@
+---
+interface Props {
+  entry: any;
+  count?: number;
+  transitionNamePrefix?: string;
+}
+
+const { entry, count = 0, transitionNamePrefix } = Astro.props;
+---
+
+{
+  entry.map((tag: string) => (
+    <a
+      class="text-sm font-black bg-white dark:text-black p-1.5 m-1 rounded-lg "
+      href={`/tag/${tag}`}
+    >
+      {tag} {count > 1 && ` ${count}`}
+    </a>
+  ))
+}

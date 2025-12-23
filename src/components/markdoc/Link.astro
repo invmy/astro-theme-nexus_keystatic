@@ -1,0 +1,51 @@
+---
+import {
+  YouTube,
+  Vimeo,
+  BlueskyPost,
+  BaselineStatus,
+  LinkPreview,
+} from "astro-embed";
+import X from "./X.astro";
+import Bilibili from "./Bilibili.astro";
+import Tiktok from "./Tiktok.astro";
+
+interface Props {
+  href: string;
+  title: string;
+}
+
+const { href, title } = Astro.props as Props;
+
+type EmbedProps = Readonly<{
+  id: string;
+}>;
+
+type EmbedComponent = (props: EmbedProps) => any;
+
+interface EmbedRule {
+  match: RegExp;
+  Comp: EmbedComponent;
+}
+
+const rules = [
+  { match: /twitter\.com|x\.com/, Comp: X },
+  { match: /youtube\.com|youtu\.be/, Comp: YouTube },
+  { match: /vimeo\.com/, Comp: Vimeo },
+  { match: /bsky\.app/, Comp: BlueskyPost },
+  { match: /baseline\.status/, Comp: BaselineStatus },
+  { match: /bilibili\.com/, Comp: Bilibili },
+  { match: /tiktok\.com/, Comp: Tiktok },
+] satisfies readonly EmbedRule[];
+
+function resolveEmbed(href: string): EmbedComponent | null {
+  for (const { match, Comp } of rules) {
+    if (match.test(href)) return Comp;
+  }
+  return null;
+}
+
+const Comp = resolveEmbed(href);
+---
+
+{Comp ? <Comp id={href} /> : <LinkPreview id={href} />}

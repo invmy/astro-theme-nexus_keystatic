@@ -1,0 +1,110 @@
+---
+title: install pagefind for you Astro theme
+date: 2025-12-22
+description: "Pagefind is a fully static search library that aims to perform well on large sites,"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/pagefind.webp
+---
+
+Pagefind runs after your static generator, and outputs a static search bundle to your generated site. With Pagefind, you don’t need to build a search index by hand — the index is generated for you from your generated site.
+
+## Astro-Pagefind
+
+[](https://github.com/shishkin/astro-pagefind)
+
+## Install
+
+```bash
+pnpm install astro-pagefind
+```
+
+### Add integration to the Astro config:
+
+`[pagefind()]`
+
+```ts
+//astro.config.mjs
+
+import { defineConfig } from "astro/config";
+import pagefind from "astro-pagefind";
+
+export default defineConfig({
+  integrations: [pagefind()],
+});
+```
+
+## Create a search page
+
+create `src\pages\search.astro` for you theme
+
+```astro
+---
+import Layout from "@/layouts/Layout.astro";
+
+import Search from "astro-pagefind/components/Search";
+---
+
+<Layout title="Search" description="Search">
+    <section class="max-w-2xl mx-auto" aria-label="Search Box">
+        <Search
+            id="search"
+            className="pagefind-ui"
+            uiOptions={{
+                showImages: true,
+                showSubResults: true,
+                showEmptyFilters: false,
+                sort: { date: "desc" },
+                sortFilters: ["Tag"],
+                openFilters: ["Section", "Tag"],
+                excerptLength: 50,
+            }}
+        />
+    </section>
+</Layout>
+
+```
+
+## UI Options
+
+```ts
+uiOptions: {
+    showImages: true, // show images in search results
+    showSubResults: true, // show sub results
+    showEmptyFilters: false, // show empty filters
+    sort: { date: "desc" }, // sort by date
+    sortFilters: ["Tag"], // sort by tag
+    openFilters: ["Section", "Tag"], // open filters
+    excerptLength: 50,
+}
+```
+
+## CSS Customization
+
+```css
+.pagefind-ui {
+    --pagefind-ui-text: //Text color;
+    --pagefind-ui-background: //Background color;
+    --pagefind-ui-primary: //Primary color;
+    --pagefind-ui-tag: //Tag color;
+}
+```
+
+## Set the pages you want to search
+
+I want to set up a search that only includes blog and memo content, excluding other pages.
+
+I configured the `data-pagefind-body` attribute on the corresponding page. 
+
+AND... meta tags
+
+```html
+<div style="display:none">
+    <div data-pagefind-filter={`section:${entry.collection}`}></div>
+    <div data-pagefind-meta={`date:${formatDate(entry.data.date)}`}></div>
+    {
+        entry.data.tags?.map((tag) => (
+            <div data-pagefind-filter={`tag:${tag}`} />
+        ))
+    }
+</div>
+```

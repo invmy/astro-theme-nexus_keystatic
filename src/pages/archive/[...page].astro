@@ -1,0 +1,122 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import List from "@/components/List.astro";
+import Pagination from "@/components/Pagination.astro";
+import RSSicon from "@/components/RSSicon.astro";
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const blogs = await getCollection("blog");
+  const memos = await getCollection("memo");
+
+  const allEntries = [
+    ...blogs.map((e) => ({ ...e, type: "blog" })),
+    ...memos.map((e) => ({ ...e, type: "memo" })),
+  ].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+  return paginate(allEntries, { pageSize: 50 });
+}
+
+const { page } = Astro.props;
+
+const groups = page.data.reduce((acc: any, entry: any) => {
+  const date = new Date(entry.data.date);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  if (!acc[year]) acc[year] = {};
+  if (!acc[year][month]) acc[year][month] = [];
+  acc[year][month].push(entry);
+  return acc;
+}, {});
+
+const sortedYears = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+---
+
+<Layout title={`Archive`} description={`All blog and memo`} noindex={true}>
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-5xl font-bold my-10 mb-24 flex items-center">
+      Archive<RSSicon entry="/" />
+    </h1>
+    <div class="space-y-16">
+      {
+        sortedYears.map((year) => {
+          const yearEntries = Object.values(groups[year]).flat();
+          const blogCount = yearEntries.filter(
+            (e: any) => e.type === "blog"
+          ).length;
+          const memoCount = yearEntries.filter(
+            (e: any) => e.type === "memo"
+          ).length;
+
+          return (
+            <section class="flex flex-col">
+              <h2 class="text-3xl font-bold flex justify-between items-baseline">
+                <span>
+                  <span>{year}</span>
+                  <span class="text-sm font-medium text-secondary align-top ml-1">
+                    {yearEntries.length}
+                  </span>
+                </span>
+                <div class="flex gap-4">
+                  {blogCount > 0 && (
+                    <a
+                      class="text-lg font-bold"
+                      href={`/archive/blog/${year}`}
+                      transition:name={`nav-blog-${year}`}
+                    >
+                      blog
+                      <span class="text-sm font-medium text-secondary ">
+                        {blogCount}
+                      </span>
+                    </a>
+                  )}
+                  {memoCount > 0 && (
+                    <a
+                      class="text-lg font-bold"
+                      href={`/archive/memo/${year}`}
+                      transition:name={`nav-memo-${year}`}
+                    >
+                      memo
+                      <span class="text-sm font-medium text-secondary ">
+                        {memoCount}
+                      </span>
+                    </a>
+                  )}
+                </div>
+              </h2>
+
+              {Object.keys(groups[year])
+                .sort((a, b) => Number(b) - Number(a))
+                .map((month) => (
+                  <div class="flex flex-row my-4">
+                    <div class="basis-1/5 flex-col my-1">
+                      <h3 class="text-2xl font-semibold">
+                        {month}
+                        <span class="text-sm font-medium text-secondary align-top ml-1">
+                          {groups[year][month].length}
+                        </span>
+                      </h3>
+                    </div>
+                    <div class="basis-full">
+                      {groups[year][month].map((entry: any) => (
+                        <List entry={entry} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </section>
+          );
+        })
+      }
+    </div>
+
+    {
+      page.lastPage > 1 && (
+        <div class="mt-16">
+          <Pagination page={page} />
+        </div>
+      )
+    }
+  </div>
+</Layout>

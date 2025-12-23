@@ -1,0 +1,34 @@
+---
+import type { PaginateFunction } from "astro";
+import { getAllMemos } from "@/lib/data";
+import Layout from "@/layouts/Layout.astro";
+import List from "@/components/List.astro";
+import Pagination from "@/components/Pagination.astro";
+import RSSicon from "@/components/RSSicon.astro";
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  const allMemos = await getAllMemos();
+
+  return paginate(allMemos, { pageSize: 30 });
+}
+
+const { page } = Astro.props;
+---
+
+<Layout
+  title={`Page ${page.currentPage} Memo`}
+  description={`Latest Memos`}
+  noindex={true}
+>
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-5xl font-bold my-10 flex items-center">
+      Memo<RSSicon entry="memo/" />
+    </h1>
+    {page.data.map((p) => <List entry={p} />)}
+  </div>
+  <Pagination page={page} />
+</Layout>

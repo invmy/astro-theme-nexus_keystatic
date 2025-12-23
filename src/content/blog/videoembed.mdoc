@@ -1,0 +1,126 @@
+---
+title: how to embed video in Astro
+date: 2025-12-23
+description: "markdoc video embed in Astro"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/embed.webp
+---
+
+## Astro Embed
+
+[](https://astro-embed.netlify.app/)
+
+## How to Work?
+
+Utilize the powerful markdoc node functionality to automate link processing. By identifying links, it automatically handles embedding without requiring shortcode input.
+
+## How is this achieved?
+
+The markdoc integration has been installed, and `/markdoc.config.mjs` has been created in the root directory.
+
+```
+//markdoc.config.mjs
+import { defineMarkdocConfig, nodes, component } from '@astrojs/markdoc/config';
+
+export default defineMarkdocConfig({
+      nodes: {
+            ...
+            link: {
+                  ...nodes.link,
+                  render: component('./src/components/markdoc/Link.astro'),
+            },
+      },
+```
+
+Handle link embedding using the `Link.astro` component.
+
+In MD or MDX, additional integrations may be required to handle these operations. Now you can manage them using Astro templates.
+
+```
+//src\components\markdoc\Link.astro
+---
+import {
+    YouTube,
+    Vimeo,
+    BlueskyPost,
+    BaselineStatus,
+    LinkPreview,
+} from "astro-embed";
+import X from "./X.astro";
+import Bilibili from "./Bilibili.astro";
+import Tiktok from "./Tiktok.astro";
+
+interface Props {
+    href: string;
+    title: string;
+}
+
+const { href, title } = Astro.props as Props;
+
+type EmbedProps = Readonly<{
+    id: string;
+}>;
+
+type EmbedComponent = (props: EmbedProps) => any;
+
+interface EmbedRule {
+    match: RegExp;
+    Comp: EmbedComponent;
+}
+
+const rules = [
+    { match: /twitter\.com|x\.com/, Comp: X },
+    { match: /youtube\.com|youtu\.be/, Comp: YouTube },
+    { match: /vimeo\.com/, Comp: Vimeo },
+    { match: /bsky\.app/, Comp: BlueskyPost },
+    { match: /baseline\.status/, Comp: BaselineStatus },
+    { match: /bilibili\.com/, Comp: Bilibili },
+    { match: /tiktok\.com/, Comp: Tiktok },
+] satisfies readonly EmbedRule[];
+
+function resolveEmbed(href: string): EmbedComponent | null {
+    for (const { match, Comp } of rules) {
+        if (match.test(href)) return Comp;
+    }
+    return null;
+}
+
+const Comp = resolveEmbed(href);
+---
+
+{Comp ? <Comp id={href} /> : <LinkPreview id={href} />}
+
+```
+
+## customize other websites
+
+You can use the view template to implement other websites and submit your GitHub PR.
+
+### Example
+
+#### Tikok 
+
+`src\components\markdoc\Tiktok.astro`
+[](https://www.tiktok.com/@disneyanimation/video/7578758374582471991)
+
+#### Bilibili
+
+`src\components\markdoc\Bilibili.astro`
+
+[](https://www.bilibili.com/video/BV176M3zPEZu/)
+
+#### bluesky
+
+[](https://bsky.app/profile/bloomberg.com/post/3m6rkp4o2lc2s)
+
+#### twitter & X
+
+[](https://twitter.com/astrodotbuild/status/1632809919291457537)
+
+#### vimeo
+
+[](https://vimeo.com/524933864)
+
+#### youtube
+
+[](https://www.youtube.com/watch?v=dQw4w9WgXcQ)

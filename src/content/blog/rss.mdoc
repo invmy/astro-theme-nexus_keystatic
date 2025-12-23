@@ -1,0 +1,66 @@
+---
+title: Add Rss Feed to your Astro site
+date: 2025-12-24
+description: "Add Rss Feed to your Astro site"
+tags: ["Theme", "Astro"]
+image: ../../assets/images/rss.webp
+---
+
+> Astro supports fast, automatic RSS feed generation for blogs and other content websites. RSS feeds provide an easy way for users to subscribe to your content.
+
+[](https://docs.astro.build/en/recipes/rss/)
+
+```
+pnpm add @astrojs/rss
+
+```
+
+## Subscribe to all RSS feeds on this site
+
+Create a new file called `rss.xml.js` in the `src/pages/` directory.
+
+My website has two content collections.
+
+```ts
+//src\pages\rss.xml.js
+
+import rss from '@astrojs/rss';
+import { getCollection } from 'astro:content';
+import { siteConfig } from "@/site";
+import { i18n } from "astro:config/server";
+import MarkdownIt from 'markdown-it';
+import sanitizeHtml from 'sanitize-html';
+
+
+const parser = new MarkdownIt();
+
+export async function GET(context) {
+    const blog = await getCollection('blog');
+    const memo = await getCollection('memo');
+
+    const posts = [...blog, ...memo].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+    return rss({
+        trailingSlash: false,
+        title: siteConfig.title,
+        description: siteConfig.description,
+        site: context.site,
+
+        items: posts.map((post) => ({
+            title: post.data.title,
+            pubDate: post.data.date,
+            description: post.data.description || '',
+            link: `/${post.collection}/${post.id}/`,
+            content: sanitizeHtml(parser.render(post.body || ''), {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
+            }),
+            ...post.data,
+        })),
+        customData: `<language>${i18n?.defaultLocale || 'zh-cn'}`,
+    });
+}
+```
+
+## Including full post content
+
+[](https://docs.astro.build/en/recipes/rss/#including-full-post-content)
