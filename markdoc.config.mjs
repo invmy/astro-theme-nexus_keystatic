@@ -29,6 +29,12 @@ export default defineMarkdocConfig({
                         alt: { type: String },
                   },
             },
+            horizontalGallery: {
+                  render: component('./src/components/markdoc/HorizontalGallery.astro'),
+                  attributes: {
+                        images: { type: Array, required: true },
+                  },
+            },
       },
       extends: [
             shiki({

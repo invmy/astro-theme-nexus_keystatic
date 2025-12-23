@@ -1,0 +1,39 @@
+---
+interface Props {
+  images: {
+    src: string;
+    alt?: string;
+  }[];
+}
+
+const { images } = Astro.props;
+---
+
+<div class="my-10">
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+    <div
+      class="horizontal-gallery-container flex overflow-x-auto gap-6 pb-6
+                -mx-20 lg:-mx-40
+                px-20 lg:px-40
+                cursor-grab active:cursor-grabbing
+                scroll-smooth
+                overscroll-x-contain"
+    >
+      {
+        images.map((image, index) => (
+          <div
+            class={`shrink-0 ${index === 0 ? "snap-start" : "snap-center"}
+                     h-[480px] flex items-center justify-center`}
+          >
+            <img
+              src={image.src}
+              alt={image.alt || "image"}
+              loading="lazy"
+              class="max-w-none h-full w-auto object-contain select-none -webkit-user-drag-none"
+            />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>

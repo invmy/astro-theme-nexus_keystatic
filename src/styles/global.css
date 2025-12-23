@@ -58,3 +58,8 @@
   border-radius: var(--custom-radius);
   overflow: clip;
 }
+
+.horizontal-gallery-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-color) var(--bg-color);
+}
