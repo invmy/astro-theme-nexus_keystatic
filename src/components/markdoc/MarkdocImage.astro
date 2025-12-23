@@ -32,7 +32,7 @@ if (mode === "full") {
 } else if (mode === "min") {
   widthClass = "w-full sm:max-w-[50%] mx-auto";
 }
-const allclass = `${widthClass} block h-auto rounded-[var(--custom-radius)] select-none zoomable-img`;
+const allclass = `${widthClass} block h-auto rounded-[var(--custom-radius)] select-none`;
 ---
 
 <figure class={`my-8 ${mode === "full" ? "" : "overflow-visible"}`}>

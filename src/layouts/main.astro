@@ -5,7 +5,6 @@ import Images from "@/components/markdoc/MarkdocImage.astro";
 import PostHead from "@/components/PostHead.astro";
 import type { CollectionEntry } from "astro:content";
 import PrevNextNav from "@/components/PrevNextNav.astro";
-import Zoom from "@/components/Zoom.astro";
 
 interface Props {
   entry: CollectionEntry<"blog"> | CollectionEntry<"memo">;
@@ -22,7 +21,6 @@ const { entry, prev, next } = Astro.props;
     class="max-w-2xl mx-auto overflow-visible scroll-touch"
     data-pagefind-body
   >
-    <Zoom />
     {
       entry.data.image && (
         <Images
