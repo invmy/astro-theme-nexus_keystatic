@@ -21,6 +21,15 @@ export default defineMarkdocConfig({
                   render: component('./src/components/markdoc/Link.astro'),
             },
       },
+      tags: {
+            networkImage: {
+                  render: component('./src/components/markdoc/MarkdocImage.astro'),
+                  attributes: {
+                        src: { type: String, required: true },
+                        alt: { type: String },
+                  },
+            },
+      },
       extends: [
             shiki({
                   theme: 'material-theme-darker',

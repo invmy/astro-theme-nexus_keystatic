@@ -10,6 +10,9 @@ import icon from "astro-icon";
 import sitemap from "@astrojs/sitemap";
 import partytown from "@astrojs/partytown";
 
+import react from "@astrojs/react";
+import keystatic from '@keystatic/astro'
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://astro-theme-nexus.pages.dev/',
@@ -20,14 +23,22 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ["lodash-es", "lodash"],
+    },
+    ssr: {
+      noExternal: ["@keystatic/core", "@keystatic/astro"],
+    },
   },
 
   integrations: [
     markdoc({ allowHTML: true, ignoreIndentation: true }),
+    react(),
     icon(),
     sitemap(),
     partytown(),
     pagefind(),
+    keystatic(),
   ],
   image: {
     service: passthroughImageService(), // if you want to use your own image service
